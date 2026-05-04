@@ -5,23 +5,29 @@ require("dotenv").config();
 
 const app = express();
 
-// ✅ MIDDLEWARE (VERY IMPORTANT)
-app.use(express.json()); // 🔥 THIS FIXES YOUR PROBLEM
-app.use(cors());
+// ✅ MIDDLEWARE
+app.use(express.json());
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
 // ✅ ROUTES
 const authRoutes = require("./routes/authRoutes");
 const cryptoRoutes = require("./routes/cryptoRoutes");
 
+// Auth routes
 app.use("/api", authRoutes);
-app.use("/api/crypto", cryptoRoutes);
+
+// 🔥 FIXED: crypto routes
+app.use("/api", cryptoRoutes);
 
 // ✅ TEST ROUTE
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// ✅ CONNECT TO MONGODB
+// ✅ MONGODB CONNECTION
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
